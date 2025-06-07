@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>날씨 위젯 생성기</title>
+    <title>날씨 위젯</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,131 @@
             padding: 20px;
         }
 
-        .container {
+        /* 위젯 전용 스타일 */
+        .widget-mode {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-widget {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .weather-widget::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .city-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .date {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .temperature {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: #333;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .weather-description {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .detail-icon {
+            font-size: 1.2rem;
+        }
+
+        .powered-by {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.7rem;
+            color: #999;
+            opacity: 0.7;
+        }
+
+        /* 생성기 모드 스타일 */
+        .generator-mode {
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -114,7 +238,7 @@
             gap: 20px;
         }
 
-        .weather-widget {
+        .generator-widget {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 25px;
@@ -124,7 +248,7 @@
             overflow: hidden;
         }
 
-        .weather-widget::before {
+        .generator-widget::before {
             content: '';
             position: absolute;
             top: 0;
@@ -134,67 +258,9 @@
             background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
-        .weather-widget:hover {
+        .generator-widget:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .widget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .city-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .date {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .weather-main {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .temperature {
-            font-size: 3rem;
-            font-weight: 300;
-            color: #333;
-        }
-
-        .weather-icon {
-            font-size: 4rem;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-        }
-
-        .weather-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .info-icon {
-            width: 20px;
-            height: 20px;
-            opacity: 0.7;
         }
 
         .widget-actions {
@@ -264,10 +330,108 @@
             font-size: 1.2rem;
             margin-top: 50px;
         }
+
+        .generator-weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .generator-temperature {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #333;
+        }
+
+        .generator-weather-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .generator-weather-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .generator-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .generator-info-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        /* 숨김 스타일 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 날씨별 배경 */
+        .weather-sunny { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+        .weather-cloudy { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .weather-rainy { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .weather-snowy { background: linear-gradient(135deg, #e6ddd4 0%, #d5d4d0 100%); }
+        .weather-windy { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+
+        @media (max-width: 320px) {
+            .weather-widget {
+                padding: 20px;
+            }
+            
+            .temperature {
+                font-size: 3rem;
+            }
+            
+            .weather-icon {
+                font-size: 3.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 위젯 표시 모드 -->
+    <div id="widgetMode" class="widget-mode hidden">
+        <div class="weather-widget">
+            <div class="widget-header">
+                <div class="city-name" id="widgetCityName">서울</div>
+                <div class="date" id="widgetDate"></div>
+            </div>
+            
+            <div class="weather-main">
+                <div class="temperature" id="widgetTemperature">22°</div>
+                <div class="weather-icon" id="widgetWeatherIcon">☀️</div>
+            </div>
+            
+            <div class="weather-description" id="widgetWeatherDescription">맑음</div>
+            
+            <div class="weather-details">
+                <div class="detail-item">
+                    <span class="detail-icon">💧</span>
+                    <span id="widgetHumidity">습도 65%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">🌡️</span>
+                    <span id="widgetFeelsLike">체감 24°</span>
+                </div>
+            </div>
+            
+            <div class="powered-by">
+                Weather Widget Pro
+            </div>
+        </div>
+    </div>
+
+    <!-- 생성기 모드 -->
+    <div id="generatorMode" class="generator-mode">
         <div class="header">
             <h1>🌤️ 날씨 위젯 생성기</h1>
             <p>개별 링크가 있는 날씨 위젯을 만들어 노션에 임베드하세요</p>
@@ -328,6 +492,77 @@
             windy: '바람'
         };
 
+        const weatherGradients = {
+            sunny: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+            cloudy: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            rainy: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            snowy: 'linear-gradient(135deg, #e6ddd4 0%, #d5d4d0 100%)',
+            windy: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
+        };
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                city: params.get('city'),
+                temp: params.get('temp'),
+                weather: params.get('weather'),
+                humidity: params.get('humidity'),
+                id: params.get('id')
+            };
+        }
+
+        function isWidgetMode() {
+            const params = getUrlParams();
+            return params.city !== null; // URL에 city 파라미터가 있으면 위젯 모드
+        }
+
+        function formatCurrentDate() {
+            return new Intl.DateTimeFormat('ko-KR', {
+                month: 'short',
+                day: 'numeric',
+                weekday: 'short'
+            }).format(new Date());
+        }
+
+        function calculateFeelsLike(temp, humidity) {
+            const temperature = parseInt(temp);
+            const humidityValue = parseInt(humidity);
+            
+            let feelsLike = temperature;
+            if (humidityValue > 70) {
+                feelsLike += 2;
+            } else if (humidityValue < 30) {
+                feelsLike -= 1;
+            }
+            
+            return feelsLike;
+        }
+
+        function initializeWidget() {
+            const params = getUrlParams();
+            
+            // 기본값 설정
+            const city = params.city || '서울';
+            const temp = params.temp || '22';
+            const weather = params.weather || 'sunny';
+            const humidity = params.humidity || '65';
+            
+            // 배경 그라디언트 변경
+            document.body.style.background = weatherGradients[weather];
+            document.body.className = `weather-${weather}`;
+            
+            // 위젯 내용 업데이트
+            document.getElementById('widgetCityName').textContent = city;
+            document.getElementById('widgetDate').textContent = formatCurrentDate();
+            document.getElementById('widgetTemperature').textContent = `${temp}°`;
+            document.getElementById('widgetWeatherIcon').textContent = weatherIcons[weather];
+            document.getElementById('widgetWeatherDescription').textContent = weatherNames[weather];
+            document.getElementById('widgetHumidity').textContent = `습도 ${humidity}%`;
+            
+            const feelsLike = calculateFeelsLike(temp, humidity);
+            document.getElementById('widgetFeelsLike').textContent = `체감 ${feelsLike}°`;
+        }
+
         function generateWidget() {
             const cityName = document.getElementById('cityName').value || '서울';
             const temperature = document.getElementById('temperature').value || '22';
@@ -357,24 +592,24 @@
             }
 
             container.innerHTML = widgets.map(widget => `
-                <div class="weather-widget" id="widget-${widget.id}">
+                <div class="generator-widget" id="widget-${widget.id}">
                     <div class="widget-header">
                         <div class="city-name">${widget.cityName}</div>
                         <div class="date">${formatDate(widget.createdAt)}</div>
                     </div>
                     
-                    <div class="weather-main">
-                        <div class="temperature">${widget.temperature}°</div>
-                        <div class="weather-icon">${weatherIcons[widget.weather]}</div>
+                    <div class="generator-weather-main">
+                        <div class="generator-temperature">${widget.temperature}°</div>
+                        <div class="generator-weather-icon">${weatherIcons[widget.weather]}</div>
                     </div>
                     
-                    <div class="weather-info">
-                        <div class="info-item">
-                            <span class="info-icon">🌡️</span>
+                    <div class="generator-weather-info">
+                        <div class="generator-info-item">
+                            <span class="generator-info-icon">🌡️</span>
                             <span>${weatherNames[widget.weather]}</span>
                         </div>
-                        <div class="info-item">
-                            <span class="info-icon">💧</span>
+                        <div class="generator-info-item">
+                            <span class="generator-info-icon">💧</span>
                             <span>습도 ${widget.humidity}%</span>
                         </div>
                     </div>
@@ -391,75 +626,92 @@
                     <div class="url-display" id="url-${widget.id}" style="display: none;"></div>
                     <div class="success-message" id="success-${widget.id}"></div>
                 </div>
-     '. join('');
-     }
+            `).join('');
+        }
 
-     함수 형식Date(날짜) {
-     새로운 국제선을 반환합니다.DateTimeFormat('ko-KR', {
-     월: '짧다',
-     낮: 'numeric',
-     시간: '2자리',
-     분: '2자리'
-     }). 형식(날짜);
-     }
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('ko-KR', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
 
-     함수 copyWidgetUrl(widgetId) {
-     widget = widget.find(w => w.id === widgetId);
-     const widgetUrl = generateWidgetUrl(widget);
+        function copyWidgetUrl(widgetId) {
+            const widget = widgets.find(w => w.id === widgetId);
+            const widgetUrl = generateWidgetUrl(widget);
             
-     내비게이터. clipboard.writeText(widgetUrl).그런 다음((() => {
-     showSuccess(widgetId, '링크가 클립보드에 복사되었습니다!');
-     }). catch((() => {
-     showUrlDisplay(widgetId, widgetUrl);
-     showSuccess(widgetId, '위 링크를 복사하세요');
+            navigator.clipboard.writeText(widgetUrl).then(() => {
+                showSuccess(widgetId, '링크가 클립보드에 복사되었습니다!');
+            }).catch(() => {
+                showUrlDisplay(widgetId, widgetUrl);
+                showSuccess(widgetId, '위 링크를 복사하세요');
             });
         }
 
         function showEmbedCode(widgetId) {
- widget = widget.find(w => w.id === widgetId);
- const widgetUrl = generateWidgetUrl(widget);
- const embedCode = '<ifframe src="${widgetUrl}" 너비="300" 높이="200" 프레임보더="0"></ifframe>';
+            const widget = widgets.find(w => w.id === widgetId);
+            const widgetUrl = generateWidgetUrl(widget);
+            const embedCode = `<iframe src="${widgetUrl}" width="300" height="250" frameborder="0"></iframe>`;
             
             showUrlDisplay(widgetId, embedCode);
             showSuccess(widgetId, '임베드 코드가 표시되었습니다');
         }
 
         function generateWidgetUrl(widget) {
- constparams = new URLsearchParams({
- city: widget.cityName,
- 온도: 위젯.온도,
- 날씨: 위젯.날씨,
- 습도: 위젯.습도,
- ID: widget.id
+            const params = new URLSearchParams({
+                city: widget.cityName,
+                temp: widget.temperature,
+                weather: widget.weather,
+                humidity: widget.humidity,
+                id: widget.id
             });
             
-            // 실제 환경에서는 여기에 실제 도메인을 사용하세요
- ${window.location.origin}/widget를 반환하시겠습니까?${params.toString()}′;
+            // 현재 페이지 URL에서 파라미터만 변경
+            const baseUrl = window.location.origin + window.location.pathname;
+            return `${baseUrl}?${params.toString()}`;
         }
 
-     함수 showUrlDisplay(widgetId, 콘텐츠) {
- const urlDisplay = document.getElementById('url-${widgetId}');
- urlDisplay.textContent = 콘텐츠;
- urlDisplay.style.display = '차단';
-     }
+        function showUrlDisplay(widgetId, content) {
+            const urlDisplay = document.getElementById(`url-${widgetId}`);
+            urlDisplay.textContent = content;
+            urlDisplay.style.display = 'block';
+        }
 
-     함수 showSuccess(widgetId, 메시지) {
- const successDiv = document.getElementById('success-${widgetId}');
- successDiv.textContent = 메시지;
- successDiv.classList.add('show');
+        function showSuccess(widgetId, message) {
+            const successDiv = document.getElementById(`success-${widgetId}`);
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
             
-     setTimeout((() => {
- successDiv.classList.remove('쇼');
-     }, 3000);
-     }
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 3000);
+        }
 
-     // 초기 실행
- document.addEventListener('DOMContentLoaded', 함수() {
-     // 예시 위젯 하나 생성
-     setTimeout((() => {
-     위젯 생성();
-     }, 500);
-     });
- </script>
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isWidgetMode()) {
+                // 위젯 모드: 위젯만 표시
+                document.getElementById('widgetMode').classList.remove('hidden');
+                document.getElementById('generatorMode').classList.add('hidden');
+                initializeWidget();
+                
+                // 시간 업데이트
+                setInterval(() => {
+                    document.getElementById('widgetDate').textContent = formatCurrentDate();
+                }, 60000);
+            } else {
+                // 생성기 모드: 생성기만 표시
+                document.getElementById('widgetMode').classList.add('hidden');
+                document.getElementById('generatorMode').classList.remove('hidden');
+                
+                // 예시 위젯 하나 생성
+                setTimeout(() => {
+                    generateWidget();
+                }, 500);
+            }
+        });
+    </script>
 </body>
 </html>
