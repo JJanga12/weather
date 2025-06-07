@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨 위젯 생성기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a6f);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(238, 90, 111, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .weather-widget {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-widget::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .weather-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .city-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .date {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .temperature {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #333;
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .weather-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .btn-copy:hover {
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-embed {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #333;
+        }
+
+        .btn-embed:hover {
+            box-shadow: 0 8px 20px rgba(168, 237, 234, 0.3);
+        }
+
+        .url-display {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #495057;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .no-widgets {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌤️ 날씨 위젯 생성기</h1>
+            <p>개별 링크가 있는 날씨 위젯을 만들어 노션에 임베드하세요</p>
+        </div>
+
+        <div class="controls">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="cityName">도시명</label>
+                    <input type="text" id="cityName" placeholder="예: 서울" value="서울">
+                </div>
+                <div class="form-group">
+                    <label for="temperature">온도 (°C)</label>
+                    <input type="number" id="temperature" placeholder="예: 22" value="22">
+                </div>
+                <div class="form-group">
+                    <label for="weather">날씨</label>
+                    <select id="weather">
+                        <option value="sunny">맑음 ☀️</option>
+                        <option value="cloudy">흐림 ☁️</option>
+                        <option value="rainy">비 🌧️</option>
+                        <option value="snowy">눈 ❄️</option>
+                        <option value="windy">바람 💨</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="humidity">습도 (%)</label>
+                    <input type="number" id="humidity" placeholder="예: 65" min="0" max="100" value="65">
+                </div>
+            </div>
+            <button class="btn" onclick="generateWidget()">위젯 생성하기</button>
+        </div>
+
+        <div id="widgetsContainer" class="widgets-grid">
+            <div class="no-widgets">
+                위의 양식을 채우고 "위젯 생성하기" 버튼을 클릭하세요
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let widgets = [];
+        let widgetCounter = 0;
+
+        const weatherIcons = {
+            sunny: '☀️',
+            cloudy: '☁️',
+            rainy: '🌧️',
+            snowy: '❄️',
+            windy: '💨'
+        };
+
+        const weatherNames = {
+            sunny: '맑음',
+            cloudy: '흐림',
+            rainy: '비',
+            snowy: '눈',
+            windy: '바람'
+        };
+
+        function generateWidget() {
+            const cityName = document.getElementById('cityName').value || '서울';
+            const temperature = document.getElementById('temperature').value || '22';
+            const weather = document.getElementById('weather').value;
+            const humidity = document.getElementById('humidity').value || '65';
+            
+            const widgetId = ++widgetCounter;
+            const widget = {
+                id: widgetId,
+                cityName,
+                temperature,
+                weather,
+                humidity,
+                createdAt: new Date()
+            };
+            
+            widgets.push(widget);
+            renderWidgets();
+        }
+
+        function renderWidgets() {
+            const container = document.getElementById('widgetsContainer');
+            
+            if (widgets.length === 0) {
+                container.innerHTML = '<div class="no-widgets">위의 양식을 채우고 "위젯 생성하기" 버튼을 클릭하세요</div>';
+                return;
+            }
+
+            container.innerHTML = widgets.map(widget => `
+                <div class="weather-widget" id="widget-${widget.id}">
+                    <div class="widget-header">
+                        <div class="city-name">${widget.cityName}</div>
+                        <div class="date">${formatDate(widget.createdAt)}</div>
+                    </div>
+                    
+                    <div class="weather-main">
+                        <div class="temperature">${widget.temperature}°</div>
+                        <div class="weather-icon">${weatherIcons[widget.weather]}</div>
+                    </div>
+                    
+                    <div class="weather-info">
+                        <div class="info-item">
+                            <span class="info-icon">🌡️</span>
+                            <span>${weatherNames[widget.weather]}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">💧</span>
+                            <span>습도 ${widget.humidity}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="widget-actions">
+                        <button class="btn btn-small btn-copy" onclick="copyWidgetUrl(${widget.id})">
+                            🔗 링크 복사
+                        </button>
+                        <button class="btn btn-small btn-embed" onclick="showEmbedCode(${widget.id})">
+                            📋 임베드 코드
+                        </button>
+                    </div>
+                    
+                    <div class="url-display" id="url-${widget.id}" style="display: none;"></div>
+                    <div class="success-message" id="success-${widget.id}"></div>
+                </div>
+     '. join('');
+     }
+
+     함수 형식Date(날짜) {
+     새로운 국제선을 반환합니다.DateTimeFormat('ko-KR', {
+     월: '짧다',
+     낮: 'numeric',
+     시간: '2자리',
+     분: '2자리'
+     }). 형식(날짜);
+     }
+
+     함수 copyWidgetUrl(widgetId) {
+     widget = widget.find(w => w.id === widgetId);
+     const widgetUrl = generateWidgetUrl(widget);
+            
+     내비게이터. clipboard.writeText(widgetUrl).그런 다음((() => {
+     showSuccess(widgetId, '링크가 클립보드에 복사되었습니다!');
+     }). catch((() => {
+     showUrlDisplay(widgetId, widgetUrl);
+     showSuccess(widgetId, '위 링크를 복사하세요');
+            });
+        }
+
+        function showEmbedCode(widgetId) {
+ widget = widget.find(w => w.id === widgetId);
+ const widgetUrl = generateWidgetUrl(widget);
+ const embedCode = '<ifframe src="${widgetUrl}" 너비="300" 높이="200" 프레임보더="0"></ifframe>';
+            
+            showUrlDisplay(widgetId, embedCode);
+            showSuccess(widgetId, '임베드 코드가 표시되었습니다');
+        }
+
+        function generateWidgetUrl(widget) {
+ constparams = new URLsearchParams({
+ city: widget.cityName,
+ 온도: 위젯.온도,
+ 날씨: 위젯.날씨,
+ 습도: 위젯.습도,
+ ID: widget.id
+            });
+            
+            // 실제 환경에서는 여기에 실제 도메인을 사용하세요
+ ${window.location.origin}/widget를 반환하시겠습니까?${params.toString()}′;
+        }
+
+     함수 showUrlDisplay(widgetId, 콘텐츠) {
+ const urlDisplay = document.getElementById('url-${widgetId}');
+ urlDisplay.textContent = 콘텐츠;
+ urlDisplay.style.display = '차단';
+     }
+
+     함수 showSuccess(widgetId, 메시지) {
+ const successDiv = document.getElementById('success-${widgetId}');
+ successDiv.textContent = 메시지;
+ successDiv.classList.add('show');
+            
+     setTimeout((() => {
+ successDiv.classList.remove('쇼');
+     }, 3000);
+     }
+
+     // 초기 실행
+ document.addEventListener('DOMContentLoaded', 함수() {
+     // 예시 위젯 하나 생성
+     setTimeout((() => {
+     위젯 생성();
+     }, 500);
+     });
+ </script>
+</body>
+</html>
