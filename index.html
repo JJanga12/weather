@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             padding: 20px;
         }
@@ -37,6 +37,7 @@
             position: relative;
             overflow: hidden;
             animation: slideIn 0.6s ease-out;
+            border: 1px solid #e0e0e0;
         }
 
         @keyframes slideIn {
@@ -57,7 +58,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #ffffff, #ffffff);
         }
 
         .widget-header {
@@ -124,7 +125,7 @@
             gap: 8px;
             font-size: 0.9rem;
             color: #555;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.05);
             padding: 10px;
             border-radius: 12px;
         }
@@ -149,7 +150,7 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #333;
             margin-bottom: 40px;
         }
 
@@ -161,17 +162,17 @@
 
         .header p {
             font-size: 1.1rem;
-            opacity: 0.9;
+            opacity: 0.8;
         }
 
         .controls {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            color: white;
+            color: #333;
         }
 
         .form-grid {
@@ -194,9 +195,9 @@
 
         .form-group input, .form-group select {
             padding: 12px 16px;
-            border: none;
+            border: 1px solid #ddd;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff;
             font-size: 1rem;
             color: #333;
             transition: all 0.3s ease;
@@ -207,6 +208,7 @@
             background: white;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
         }
 
         .btn {
@@ -239,13 +241,14 @@
         }
 
         .generator-widget {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             border-radius: 20px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid #e0e0e0;
         }
 
         .generator-widget::before {
@@ -255,7 +258,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #ffffff, #ffffff);
         }
 
         .generator-widget:hover {
@@ -326,7 +329,7 @@
 
         .no-widgets {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.6);
             font-size: 1.2rem;
             margin-top: 50px;
         }
@@ -375,12 +378,12 @@
             display: none !important;
         }
 
-        /* 날씨별 배경 */
-        .weather-sunny { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
-        .weather-cloudy { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-        .weather-rainy { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .weather-snowy { background: linear-gradient(135deg, #e6ddd4 0%, #d5d4d0 100%); }
-        .weather-windy { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+        /* 날씨별 배경 - 모두 흰색으로 변경 */
+        .weather-sunny { background: #ffffff; }
+        .weather-cloudy { background: #ffffff; }
+        .weather-rainy { background: #ffffff; }
+        .weather-snowy { background: #ffffff; }
+        .weather-windy { background: #ffffff; }
 
         @media (max-width: 320px) {
             .weather-widget {
@@ -492,12 +495,13 @@
             windy: '바람'
         };
 
+        // 모든 날씨 배경을 흰색으로 변경
         const weatherGradients = {
-            sunny: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
-            cloudy: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-            rainy: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            snowy: 'linear-gradient(135deg, #e6ddd4 0%, #d5d4d0 100%)',
-            windy: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
+            sunny: '#ffffff',
+            cloudy: '#ffffff',
+            rainy: '#ffffff',
+            snowy: '#ffffff',
+            windy: '#ffffff'
         };
 
         function getUrlParams() {
@@ -547,7 +551,7 @@
             const weather = params.weather || 'sunny';
             const humidity = params.humidity || '65';
             
-            // 배경 그라디언트 변경
+            // 배경 그라디언트 변경 (모두 흰색)
             document.body.style.background = weatherGradients[weather];
             document.body.className = `weather-${weather}`;
             
